@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Country Information</title>
+    <link rel="stylesheet" type="text/css" href="styles.css">
+
+<style>
+    body {
+    font-family: 'Times New Roman', Times, serif;
+    margin: 0;
+    padding: 0;
+    background-color: #cceca1; 
+    color: #333;
+}    
+#country {
+    border: 1px solid #ccc;
+    padding: 20px;
+    margin: 20px;
+    margin-left: 15%;
+    margin-right: 15%;
+    background-color: #f5f5f5;
+}
+
+h1 {
+    text-align: center;
+    font-size: 500%;
+    margin-bottom: 20px;
+    margin-top: 20px; 
+    color: #749713; 
+}
+
+form {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+label {
+    font-weight: bold;
+    font-size: 200%;
+    color: #68a53f;
+}
+
+input[type="text"] {
+    padding: 8px;
+    font-size: 16px;
+    border: 1px solid #ccc; 
+    border-radius: 5px;
+    font-family: 'Times New Roman', Times, serif;
+}
+
+button {
+    padding: 8px 16px;
+    font-family: 'Times New Roman', Times, serif;
+    font-size: 16px;
+    cursor: pointer;
+    background-color: #749713; 
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    transition: background-color 0.3s ease; 
+}    
+
+button:hover {
+    background-color: #68a53f; 
+}
+
+#countryInfo {
+    align-items: center;
+    margin-top: 1px;
+    padding: 30px 60px;
+    border-radius: 5px;
+    text-align: center;
+    font-family: 'Times New Roman', Times, serif;
+}
+
+#countryInfo h2 {
+    margin-top: 1px;
+    color: #9aa508; 
+}
+
+#countryInfo p {
+    margin: 10px 0;
+    color: #555; 
+}
+
+#countryInfo img {
+    max-width: 300%;
+    width: 50%;
+    height: auto;
+    margin-top: 20px;
+    border: 1px solid #ccc;
+    border-radius: 30px;
+    box-shadow: 0 10px 4px rgba(0, 0, 0, 0.1); 
+}
+</style>
+
+</head>
+<body>
+    <div id="country">
+        <h1>Country Information</h1>
+    <form id="searchForm">
+        <label for="countryName">Enter Country Name:</label>
+        <input type="text" id="countryName" name="countryName">
+        <button type="submit">Search</button>
+    </form>
+    <div id="countryInfo"></div>
+
+    <script>
+        function searchCountry(countryName) {
+            fetch(`https://restcountries.com/v3.1/name/${countryName}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    // Display the country information
+                    displayCountryInfo(data);
+                })
+                .catch(error => {
+                    console.error('There was a problem fetching the country information:', error);
+                });
+        }
+
+        // Function to display country information
+        function displayCountryInfo(countryData) {
+            const countryInfoDiv = document.getElementById('countryInfo');
+            countryInfoDiv.innerHTML = ''; 
+
+            if (countryData.length > 0) {
+                const country = countryData[0];
+                const countryName = country.name.common;
+                const capital = country.capital ? country.capital[0] : 'Unknown';
+                const population = country.population ? country.population.toLocaleString() : 'Unknown';
+                const continent = country.region ? country.region : 'Unknown';
+                const subcontinent = country.subregion ? country.subregion : 'Unknown';
+                const area = country.area ? country.area.toLocaleString() : 'Unknown';
+                const flagUrl = country.flags.png;
+
+
+                const detailshtml = `
+                    <h2>${countryName}</h2>
+                    <p><strong>Capital:</strong> ${capital}</p>
+                    <p><strong>Population:</strong> ${population}</p>
+                    <p><strong>Continent:</strong> ${continent}</p>
+                    <p><strong>SubContinent:</strong> ${subcontinent}</p>
+                    <p><strong>Area:</strong> ${area} km²</p>
+                    <img src="${flagUrl}" alt="${countryName} Flag">
+                `;
+                
+
+                countryInfoDiv.innerHTML = detailshtml;
+            } else {
+                countryInfoDiv.textContent = 'Country not found.';
+            }
+        }
+
+        
+        document.getElementById('searchForm').addEventListener('submit', function(event) {
+            event.preventDefault(); 
+            const countryName = document.getElementById('countryName').value;
+            searchCountry(countryName);
+        });
+    </script>
+    </div>
+</body>
+</html>
